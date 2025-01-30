@@ -18,26 +18,26 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "productos")
+@Table(name = "products")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Producto {
+public class Product {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 100)
-    private String nombre;
+    private String name;
 
     @Column(columnDefinition = "TEXT")
-    private String descripcion;
+    private String description;
 
     @Column(nullable = false)
-    private BigDecimal precio;
+    private BigDecimal price;
 
     @Column(nullable = false)
     private Integer stock;
@@ -47,7 +47,7 @@ public class Producto {
 
     @ManyToOne
     @JoinColumn(name = "categoria_id")
-    private Categoria categoria;
+    private Category categoria;
 
     @Column(nullable = false)
     private LocalDateTime fechaCreacion = LocalDateTime.now();
