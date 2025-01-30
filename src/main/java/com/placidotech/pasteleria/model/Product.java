@@ -47,7 +47,7 @@ public class Product {
 
     @ManyToOne
     @JoinColumn(name = "categoria_id")
-    private Category categoria;
+    private Category category;
 
     @Column(nullable = false)
     private LocalDateTime fechaCreacion = LocalDateTime.now();
