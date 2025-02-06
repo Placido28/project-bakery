@@ -18,7 +18,7 @@ import com.placidotech.pasteleria.exception.ResourceNotFoundException;
 import com.placidotech.pasteleria.request.CreateUserRequest;
 import com.placidotech.pasteleria.request.UserUpdateRequest;
 import com.placidotech.pasteleria.response.ApiResponse;
-import com.placidotech.pasteleria.service.user.UserService;
+import com.placidotech.pasteleria.service.user.IUserService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserService userService;
+    private final IUserService userService;
 
     @GetMapping
     public ResponseEntity<ApiResponse> getAllUsers(){

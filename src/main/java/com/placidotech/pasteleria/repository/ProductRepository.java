@@ -11,9 +11,13 @@ import com.placidotech.pasteleria.model.Product;
  * @author CristopherPlacidoOca
  */
 public interface ProductRepository extends JpaRepository<Product, Long>{
-    List<Product> findByCategoryName(String category);
+    
+    // Obtener productos no eliminados
+    List<Product> findByRemovedFalse();
 
-    List<Product> findByName(String name);
+    // Buscar productos por nombre (excluyendo eliminados)
+    List<Product> findByNameContainingAndRemovedFalse(String name, boolean removed);
 
-    long countByName(String name);
+    // Buscar productos por categoría (excluyendo eliminados)
+    List<Product> findByCategoryIdAndRemovedFalse(Long categoryId, boolean removed);
 }

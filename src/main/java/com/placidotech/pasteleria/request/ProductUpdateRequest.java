@@ -1,4 +1,4 @@
-package com.placidotech.pasteleria.dto;
+package com.placidotech.pasteleria.request;
 
 import java.math.BigDecimal;
 
@@ -8,14 +8,12 @@ import lombok.Data;
  *
  * @author CristopherPlacidoOca
  */
-
 @Data
-public class ProductDTO {
-    private Long id;
+public class ProductUpdateRequest {
     private String name;
     private String description;
     private BigDecimal price;
     private Integer stock;
     private String imageUrl; // URL de la imagen en Firebase
-    private Long categoryId; // DTO simplificado para la categoria
+    private Long categoryId; // Id de la categoria
 }

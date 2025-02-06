@@ -47,4 +47,8 @@ public class Product {
 
     @Column(nullable = false)
     private LocalDateTime dateCreation = LocalDateTime.now();
+
+    // Soft Delete
+    @Column(nullable = false)
+    private boolean removed = false; // Por defecto, el producto no está eliminado
 }

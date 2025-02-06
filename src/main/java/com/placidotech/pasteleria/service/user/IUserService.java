@@ -10,7 +10,7 @@ import com.placidotech.pasteleria.request.UserUpdateRequest;
  *
  * @author CristopherPlacidoOca
  */
-public interface UserService {
+public interface IUserService {
 
     // Obtener todos los usuarios
     List<UserDTO> getAllUsers();
