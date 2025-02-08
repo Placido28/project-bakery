@@ -9,5 +9,4 @@ import com.placidotech.pasteleria.model.CartItem;
  * @author CristopherPlacidoOca
  */
 public interface CartItemRepository extends JpaRepository<CartItem, Long>{
-    void deleteAllByCartId(Long id);
 }

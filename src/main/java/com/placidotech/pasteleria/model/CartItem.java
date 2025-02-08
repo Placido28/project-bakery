@@ -27,19 +27,39 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private int quantity;
-    private BigDecimal unitprice;
+    private BigDecimal unitPrice;
     private BigDecimal totalPrice;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "cart_id")
+    @ManyToOne
+    @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
 
     public void setTotalPrice(){
-        this.totalPrice = this.unitprice.multiply(new BigDecimal(quantity));
+        if (this.unitPrice != null && this.quantity > 0) {
+            this.totalPrice = this.unitPrice.multiply(new BigDecimal(this.quantity));
+        }else{
+            this.totalPrice = BigDecimal.ZERO;
+        }
+    }
+
+    public void setQuantity(int quantity){
+        if (quantity < 0) {
+            throw new IllegalArgumentException("The quantity cannot be negative");
+        }
+        this.quantity = quantity;
+        setTotalPrice();
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice){
+        if (unitPrice == null || unitPrice.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("The unit price cannot be null or negative");
+        }
+        this.unitPrice = unitPrice;
+        setTotalPrice();
     }
 }

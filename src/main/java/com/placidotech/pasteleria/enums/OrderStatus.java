@@ -3,7 +3,6 @@ package com.placidotech.pasteleria.enums;
 public enum OrderStatus {
     PENDING,
     PROCESSING,
-    SHIPPED,
-    DELIVERED,
+    COMPLETED,
     CANCELLED
 }

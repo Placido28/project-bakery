@@ -52,4 +52,21 @@ public class User {
     // Soft Delete
     @Column(nullable = false)
     private boolean removed = false;
+
+
+    /**
+     * Asocia un carrito al usuario y asegura la consistencia de la relación bidireccional.
+     *
+     * @param cart El carrito que se asociará al usuario.
+     */
+    public void setCart(Cart cart) {
+        if (cart == null) {
+            if (this.cart != null) {
+                this.cart.setUser(null);
+            }
+        } else {
+            cart.setUser(this);
+        }
+        this.cart = cart;
+    }
 }

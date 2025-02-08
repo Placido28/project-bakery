@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,7 +29,7 @@ public class Cart {
     private Long id;
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CartItem> items = new HashSet<>();
 
     @OneToOne
@@ -43,9 +44,11 @@ public class Cart {
      */
 
     public void addItem(CartItem item){
-        this.items.add(item);
-        item.setCart(this);
-        updateTotalAmount();
+        if (item != null && !this.items.contains(item)) {
+            this.items.add(item);
+            item.setCart(this);
+            updateTotalAmount();  
+        }
     }
 
     /**
@@ -56,9 +59,11 @@ public class Cart {
      */
 
     public void removeItem(CartItem item){
-        this.items.remove(item);
-        item.setCart(null);
-        updateTotalAmount();
+        if (item != null && this.items.contains(item)) {
+            this.items.remove(item);
+            item.setCart(null);
+            updateTotalAmount();     
+        }
     }
 
     
@@ -68,12 +73,10 @@ public class Cart {
      */
 
     private void updateTotalAmount() {
-        this.totalAmount = items.stream().map(item -> {
-            BigDecimal unitPrice = item.getUnitprice();
-            if(unitPrice == null){
-                return BigDecimal.ZERO;
-            }
-            return unitPrice.multiply(BigDecimal.valueOf(item.getQuantity()));
-        }).reduce(BigDecimal.ZERO, BigDecimal::add);
+        this.totalAmount = items.stream()
+            .map(item -> item.getUnitPrice() != null 
+                ? item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity())) 
+                : BigDecimal.ZERO)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
