@@ -21,7 +21,7 @@ import com.google.cloud.storage.StorageOptions;
 public class FirebaseStorageService {
 
     private final Storage storage;
-    private final String bucketName = "my-bakery-ecommerce";
+    private final String bucketName = "my-bakery-ecommerce.firebasestorage.app";
 
     public FirebaseStorageService() throws IOException{
         GoogleCredentials credentials = GoogleCredentials

@@ -73,12 +73,12 @@ public class ProductServiceImpl implements IProductService{
 
     @Override
     public List<Product> searchProductsByName(String name) {
-        return productRepository.findByNameContainingAndRemovedFalse(name, false);
+        return productRepository.findByNameContainingAndRemovedFalse(name);
     }
 
     @Override
     public List<Product> getProductsByCategory(Long categoryId) {
-        return productRepository.findByCategoryIdAndRemovedFalse(categoryId, false);
+        return productRepository.findByCategoryIdAndRemovedFalse(categoryId);
     }
 
     @Override

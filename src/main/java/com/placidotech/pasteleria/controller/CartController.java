@@ -1,13 +1,14 @@
 package com.placidotech.pasteleria.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.placidotech.pasteleria.dto.CartDTO;
 import com.placidotech.pasteleria.request.CartItemRequest;
 import com.placidotech.pasteleria.service.cart.ICartService;
 
-import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 
@@ -26,10 +27,10 @@ import org.springframework.web.bind.annotation.RequestBody;
  */
 @RestController
 @RequestMapping("/api/carts")
-@RequiredArgsConstructor
 public class CartController {
 
-    private final ICartService cartService;
+    @Autowired
+    private  ICartService cartService;
 
     @GetMapping("/{id}")
     public ResponseEntity<CartDTO> getCartById(@PathVariable Long id) {
@@ -37,8 +38,8 @@ public class CartController {
     }
     
     @PostMapping("/{cartId}/items")
-    public ResponseEntity<CartDTO> addItemToCart(@PathVariable Long cartId, @RequestBody CartItemRequest request) {
-        return ResponseEntity.ok(cartService.addItemToCart(cartId, request));
+    public ResponseEntity<CartDTO> addItemToCart(@PathVariable Long cartId, @RequestBody CartItemRequest request, @RequestParam(required = false) Long userId) {
+        return ResponseEntity.ok(cartService.addItemToCart(cartId, request, userId));
     }
     
     @DeleteMapping("/{cartId}/items/{itemId}")

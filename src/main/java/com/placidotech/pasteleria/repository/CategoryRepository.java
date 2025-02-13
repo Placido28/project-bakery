@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.placidotech.pasteleria.model.Category;
 
@@ -11,6 +12,7 @@ import com.placidotech.pasteleria.model.Category;
  *
  * @author CristopherPlacidoOca
  */
+@Repository
 public interface CategoryRepository extends JpaRepository<Category, Long>{
     
     // Buscar categoría por nombre
@@ -19,8 +21,8 @@ public interface CategoryRepository extends JpaRepository<Category, Long>{
     // Obtener todas las categorías
     List<Category> findAll();
 
-    // Obtener productos asociados a una categoría
-    List<Category> findProductsByCategoryId(Long categoryId);
+    // // Obtener productos asociados a una categoría
+    // List<Category> findProductsByCategory_Id(Long id);
 
     List<Category> findByNameContaining(String name);
 }

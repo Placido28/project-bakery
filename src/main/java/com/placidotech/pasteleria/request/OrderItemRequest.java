@@ -1,5 +1,7 @@
 package com.placidotech.pasteleria.request;
 
+import java.math.BigDecimal;
+
 import lombok.Data;
 
 /**
@@ -9,5 +11,6 @@ import lombok.Data;
 @Data
 public class OrderItemRequest {
     private Long productId;
-    private int quantity;
+    private Integer quantity;
+    private BigDecimal price;
 }

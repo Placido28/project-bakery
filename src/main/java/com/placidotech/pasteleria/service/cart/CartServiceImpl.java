@@ -11,9 +11,11 @@ import com.placidotech.pasteleria.mapper.CartMapper;
 import com.placidotech.pasteleria.model.Cart;
 import com.placidotech.pasteleria.model.CartItem;
 import com.placidotech.pasteleria.model.Product;
+import com.placidotech.pasteleria.model.User;
 import com.placidotech.pasteleria.repository.CartItemRepository;
 import com.placidotech.pasteleria.repository.CartRepository;
 import com.placidotech.pasteleria.repository.ProductRepository;
+import com.placidotech.pasteleria.repository.UserRepository;
 import com.placidotech.pasteleria.request.CartItemRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,8 @@ public class CartServiceImpl implements ICartService{
 
     private final CartItemMapper cartItemMapper;
 
+    private final UserRepository userRepository;
+
     @Override
     public CartDTO getCartById(Long id) {
         Cart cart = cartRepository.findById(id)
@@ -44,20 +48,37 @@ public class CartServiceImpl implements ICartService{
     }
 
     @Override
-    public CartDTO addItemToCart(Long cartId, CartItemRequest request) {
+    public CartDTO addItemToCart(Long cartId, CartItemRequest request, Long userId) {
+        // Buscar el carrito por ID, o crear uno nuevo si no existe
         Cart cart = cartRepository.findById(cartId)
-            .orElseThrow(() -> new RuntimeException("Cart not found"));
+            .orElseGet(() -> {
+                Cart newCart = new Cart();
+                newCart.setTotalAmount(BigDecimal.ZERO);
+
+                // Si no hay usuario logueado, el carrito será anónimo (sin 'user' asociado)
+                if (userId != null) {
+                    User user = new User();
+                    user.setId(userId);
+                    newCart.setUser(user); // Asocia al usuario si está logueado
+                }
+                return cartRepository.save(newCart);
+            });
+
         Product product = productRepository.findById(request.getProductId())
             .orElseThrow(() -> new RuntimeException("Product not found"));
         
-        CartItem cartItem = cartItemMapper.toEntity(new CartItemDTO());
-        cartItem.setQuantity(request.getQuantity());
-        cartItem.setUnitPrice(product.getPrice());
-        cartItem.setProduct(product);
+        CartItemDTO cartItemDTO = new CartItemDTO();
+        cartItemDTO.setQuantity(request.getQuantity());
+        cartItemDTO.setUnitPrice(product.getPrice());
+        cartItemDTO.setProductId(product.getId());
+
+        CartItem cartItem = cartItemMapper.toEntity(cartItemDTO);
         cartItem.setCart(cart);
+        cartItem.setProduct(product);
 
         cart.addItem(cartItem);
         cartRepository.save(cart);
+
         return cartMapper.toDTO(cart);
     }
 
@@ -78,5 +99,16 @@ public class CartServiceImpl implements ICartService{
         return cart.getTotalAmount();
     }
 
+    @Override
+    public void associateCartWithUser(Long cartId, Long userId){
+        Cart cart = cartRepository.findById(cartId)
+            .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        cart.setUser(user);
+        cartRepository.save(cart);
+    }
 
 }

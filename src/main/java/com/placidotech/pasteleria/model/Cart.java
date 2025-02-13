@@ -33,7 +33,7 @@ public class Cart {
     private Set<CartItem> items = new HashSet<>();
 
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
     /**

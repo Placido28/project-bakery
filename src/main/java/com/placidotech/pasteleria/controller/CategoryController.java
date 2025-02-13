@@ -58,7 +58,7 @@ public class CategoryController {
         }
     }
     
-    @PutMapping("udpate/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<ApiResponse> updateCategory(@PathVariable Long id, @RequestBody CategoryUpdateRequest request) {
         try {
             Category category = categoryService.updateCategory(request, id);

@@ -2,6 +2,7 @@ package com.placidotech.pasteleria.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  *
@@ -9,6 +10,7 @@ import lombok.Data;
  */
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class ApiResponse {
     private String message;

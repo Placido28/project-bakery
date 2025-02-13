@@ -38,7 +38,6 @@ public class Product {
     @Column(nullable = false)
     private Integer stock;
 
-    @Column(nullable = false)
     private String imagenUrl;
 
     @ManyToOne
