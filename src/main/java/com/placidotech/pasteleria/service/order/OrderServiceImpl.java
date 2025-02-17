@@ -24,11 +24,6 @@ import com.placidotech.pasteleria.request.OrderItemRequest;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
-/**
- *
- * @author CristopherPlacidoOca
- */
-
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements IOrderService{

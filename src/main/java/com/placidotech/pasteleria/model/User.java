@@ -2,6 +2,8 @@ package com.placidotech.pasteleria.model;
 
 import java.util.List;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,8 +39,21 @@ public class User {
     @Column(nullable = false, length = 100, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    private List<Address> addresses;
+
+    @OneToOne
+    private Address defaultAddress;
+
+    private String phoneNumber;
+    
+    @Column(unique = true)
+    private String pendingEmail; // Nuevo email pendiente de confirmación
+
+    private String emailVerificationCode; // Código de verificación
 
     @Column(nullable = false)
     private String role; // "ROLE_USER" o "ROLE_ADMIN"
@@ -52,6 +67,21 @@ public class User {
     // Soft Delete
     @Column(nullable = false)
     private boolean removed = false;
+
+    @Column
+    private String provider; //"LOCAL" o "GOOGLE"
+
+    @Column(unique = true)
+    private String googleId; //ID de Google si usa Google Sign-In
+
+    @Column
+    private String activationToken; // Token de activación enviado por correo
+
+    @Column(unique = true)
+    private String resetToken;
+
+    @Column(nullable = false)
+    private boolean stateUser = false;
 
 
     /**
@@ -68,5 +98,11 @@ public class User {
             cart.setUser(this);
         }
         this.cart = cart;
+    }
+
+    public void encryptPassword(){
+        if (this.password != null && !this.password.isEmpty()) {
+            this.password = new BCryptPasswordEncoder().encode(this.password);
+        }
     }
 }
