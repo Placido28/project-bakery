@@ -23,6 +23,9 @@ public class UserDetailsServiceImpl implements UserDetailsService{
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
+        System.out.println("Usuario encontrado en DB: " + user.getEmail());
+        System.out.println("Roles en DB: " + user.getRole());
+
         //Convertimos el usuario a un UserDetails (usando CustomUserDetails)
         return new CustomUserDetails(user);
     }

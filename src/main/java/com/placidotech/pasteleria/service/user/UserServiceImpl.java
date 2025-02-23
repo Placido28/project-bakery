@@ -38,9 +38,9 @@ public class UserServiceImpl implements IUserService{
 
     @Override
     public UserDTO getUserById(Long id) {
-        return userRepository.findById(id)
-                .map(userMapper::toDTO)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        User user = userRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return userMapper.toDTO(user);  // Aquí mapeamos el objeto User a UserDTO         
     }
 
     @Override

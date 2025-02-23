@@ -9,10 +9,6 @@ import com.placidotech.pasteleria.model.Order;
 import com.placidotech.pasteleria.model.OrderItem;
 import com.placidotech.pasteleria.model.Product;
 
-/**
- *
- * @author CristopherPlacidoOca
- */
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long>{
 

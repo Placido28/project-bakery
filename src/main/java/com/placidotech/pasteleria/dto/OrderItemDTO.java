@@ -5,10 +5,6 @@ import java.math.BigDecimal;
 import lombok.Builder;
 import lombok.Data;
 
-/**
- *
- * @author CristopherPlacidoOca
- */
 @Data
 @Builder
 public class OrderItemDTO {

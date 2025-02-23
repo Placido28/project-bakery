@@ -5,9 +5,10 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.placidotech.pasteleria.model.Cart;
+import com.placidotech.pasteleria.model.Payment;
 
 @Repository
-public interface CartRepository extends JpaRepository<Cart, Long>{
-    Optional<Cart> findByUserId(Long userId);
+public interface PaymentRepository extends JpaRepository<Payment, Long> {
+    Optional<Payment> findByTransactionId(String transactionId);
+
 }

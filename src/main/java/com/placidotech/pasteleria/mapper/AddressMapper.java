@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import com.placidotech.pasteleria.dto.AddressDTO;
 import com.placidotech.pasteleria.enums.AddressType;
-import com.placidotech.pasteleria.exception.InvalidAddressTypeException;
 import com.placidotech.pasteleria.model.Address;
 import com.placidotech.pasteleria.request.address.CreateAddressRequest;
 import com.placidotech.pasteleria.request.address.UpdateAddressRequest;
@@ -33,7 +32,7 @@ public class AddressMapper {
         addressDTO.setNumbers(address.getNumbers());
         addressDTO.setLot(address.getLot());
         addressDTO.setBlock(address.getBlock());
-        addressDTO.setReferences(address.getReferences());
+        addressDTO.setReferences(address.getReferencesDetails());
         addressDTO.setAddressType(address.getAddressType() != null ? address.getAddressType().name() : null);
         addressDTO.setUserId(address.getUser() != null ? address.getUser().getId() : null);
         addressDTO.setDefaultAddress(address.isDefaultAddress());
@@ -53,7 +52,7 @@ public class AddressMapper {
         address.setNumbers(addressDTO.getNumbers());
         address.setLot(addressDTO.getLot());
         address.setBlock(addressDTO.getBlock());
-        address.setReferences(addressDTO.getReferences());
+        address.setReferencesDetails(addressDTO.getReferences());
         address.setAddressType(addressDTO.getAddressType() != null ? AddressType.valueOf(addressDTO.getAddressType()) : null);
         address.setDefaultAddress(addressDTO.isDefaultAddress());
 

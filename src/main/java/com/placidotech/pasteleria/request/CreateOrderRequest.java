@@ -4,12 +4,9 @@ import java.util.Set;
 
 import lombok.Data;
 
-/**
- *
- * @author CristopherPlacidoOca
- */
 @Data
 public class CreateOrderRequest {
     private Long userId;
+    private Long shippingAddressId; 
     private Set<CreateOrderItemRequest> items;
 }

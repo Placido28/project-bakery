@@ -23,12 +23,12 @@ public class CustomUserDetails implements UserDetails{
         this.email = user.getEmail();
         this.password = user.getPassword();
         this.enabled = user.isStateUser();
-        this.accountNonLocked = user.isRemoved();
+        this.accountNonLocked = !user.isRemoved();
         this.accountNonExpired = user.isStateUser();
         this.credentialsNonExpired = true;
 
         // Convertimos el rol en un GrantedAuthority
-        this.authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole()));
+        this.authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole() != null ? user.getRole() : "ROLE_USER"));
 
     }
 

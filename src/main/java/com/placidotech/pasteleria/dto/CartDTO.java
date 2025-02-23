@@ -5,10 +5,6 @@ import java.util.Set;
 
 import lombok.Data;
 
-/**
- *
- * @author CristopherPlacidoOca
- */
 @Data
 public class CartDTO {
     private Long id;

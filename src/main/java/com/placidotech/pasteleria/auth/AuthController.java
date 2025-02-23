@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.placidotech.pasteleria.dto.UserDTO;
+import com.placidotech.pasteleria.request.ActivationRequest;
 import com.placidotech.pasteleria.request.EmailRequest;
 import com.placidotech.pasteleria.request.user.GoogleLoginRequest;
 import com.placidotech.pasteleria.request.user.RegisterUserRequest;
@@ -15,10 +16,11 @@ import lombok.RequiredArgsConstructor;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.security.core.Authentication;
 
 
 
@@ -41,8 +43,8 @@ public class AuthController {
     }
 
     @GetMapping("/activate")
-    public ResponseEntity<String> activateAccount(@RequestParam("token") String token) {
-        authService.activateAccount(token);
+    public ResponseEntity<String> activateAccount(@RequestBody ActivationRequest request) {
+        authService.activateAccount(request.getToken(), request.getNewPassword());
         return ResponseEntity.ok("Account activated successfully");
     }
     
@@ -79,6 +81,12 @@ public class AuthController {
     public ResponseEntity<AuthResponse> registerWithGoogle(@RequestBody GoogleLoginRequest request) {
         AuthResponse response = authService.registerWithGoogle(request);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/test-auth")
+    public ResponseEntity<?> testAuth() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(authentication.getAuthorities());
     }
     
 }

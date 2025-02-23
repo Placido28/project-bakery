@@ -1,23 +1,29 @@
 package com.placidotech.pasteleria.service.order;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.placidotech.pasteleria.dto.OrderDTO;
 import com.placidotech.pasteleria.enums.OrderStatus;
 import com.placidotech.pasteleria.mapper.OrderMapper;
+import com.placidotech.pasteleria.model.Address;
 import com.placidotech.pasteleria.model.Order;
 import com.placidotech.pasteleria.model.OrderItem;
 import com.placidotech.pasteleria.model.Product;
 import com.placidotech.pasteleria.model.User;
+import com.placidotech.pasteleria.repository.AddressRepository;
 import com.placidotech.pasteleria.repository.OrderItemRepository;
 import com.placidotech.pasteleria.repository.OrderRepository;
 import com.placidotech.pasteleria.repository.ProductRepository;
 import com.placidotech.pasteleria.repository.UserRepository;
+import com.placidotech.pasteleria.request.CreateOrderItemRequest;
 import com.placidotech.pasteleria.request.CreateOrderRequest;
 import com.placidotech.pasteleria.request.OrderItemRequest;
 
@@ -26,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class OrderServiceImpl implements IOrderService{
 
     private final OrderRepository orderRepository;
@@ -33,6 +40,7 @@ public class OrderServiceImpl implements IOrderService{
     private final ProductRepository productRepository;
     private final OrderMapper orderMapper;
     private final OrderItemRepository orderItemRepository;
+    private final AddressRepository addressRepository;
 
     @Override
     public OrderDTO getOrderById(Long id) {
@@ -40,47 +48,75 @@ public class OrderServiceImpl implements IOrderService{
                 .orElseThrow(() -> new EntityNotFoundException("Order not found"));
         return orderMapper.toDTO(order);
     }
+
     @Override
+    @Transactional
     public OrderDTO createOrder(CreateOrderRequest request) {
         User user = userRepository.findById(request.getUserId())
             .orElseThrow(() -> new RuntimeException("User not found"));
 
+        if (request.getItems().isEmpty()) {
+        throw new RuntimeException("Cannot create an order with no items.");
+        }
+
+        Address shippingAddress = addressRepository.findById(request.getShippingAddressId())
+            .orElseThrow(() -> new RuntimeException("Shipping address not found"));
+
+        // Crear la orden con valores iniciales
         Order order = Order.builder()
                 .user(user)
+                .shippingAddress(shippingAddress)
                 .orderDate(LocalDateTime.now())
                 .orderStatus(OrderStatus.PENDING)
                 .totalAmount(BigDecimal.ZERO)
                 .items(new HashSet<>())
                 .build();
-        
+
+        // Validar stock antes de modificarlo
+        List<Product> productsToUpdate = new ArrayList<>();
+
         request.getItems().forEach(itemRequest -> {
             Product product = productRepository.findById(itemRequest.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-            
+
             if (product.getStock() < itemRequest.getQuantity()) {
                 throw new RuntimeException("Insufficient stock for product: " + product.getName());
             }
+
+            // Guardar producto a actualizar después de validaciones
+            productsToUpdate.add(product);
+        });
+
+        // Una vez validado el stock, actualizarlo y crear los items de la orden
+        productsToUpdate.forEach(product -> {
+            CreateOrderItemRequest itemRequest = request.getItems().stream()
+                    .filter(i -> i.getProductId().equals(product.getId()))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Unexpected error"));
 
             product.setStock(product.getStock() - itemRequest.getQuantity());
             productRepository.save(product);
 
             OrderItem item = OrderItem.builder()
-                .order(order)
-                .product(product)
-                .quantity(itemRequest.getQuantity())
-                .unitPrice(itemRequest.getPrice())
-                .build();
-            
-            item.setTotalPrice();
+                    .order(order)
+                    .product(product)
+                    .quantity(itemRequest.getQuantity())
+                    .unitPrice(product.getPrice()) // Se obtiene directamente del producto
+                    .totalPrice(product.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity())).setScale(2, RoundingMode.HALF_UP))
+                    .build();
+
             order.getItems().add(item);
             order.setTotalAmount(order.getTotalAmount().add(item.getTotalPrice()));
         });
 
+        // Guardar la orden
         orderRepository.save(order);
+
         return orderMapper.toDTO(order);
     }
 
     @Override
+    @Transactional
     public void updateOrderStatus(Long orderId, OrderStatus newStatus) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found"));
@@ -103,6 +139,7 @@ public class OrderServiceImpl implements IOrderService{
     }
 
     @Override
+    @Transactional
     public void addItemToOrder(Long orderId, OrderItemRequest request) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found"));
@@ -133,6 +170,7 @@ public class OrderServiceImpl implements IOrderService{
 
 
     @Override
+    @Transactional
     public void removeItemFromOrder(Long orderId, Long itemId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found"));

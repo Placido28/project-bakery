@@ -26,10 +26,14 @@ public class EmailService {
 
     public void sendActivationEmail(String recipientEmail, String token){
         String subject = "Activa tu cuenta";
+
+        // Generar el enlace correctamente
+        String activationLink = String.format("%s/activate?token=%s", baseUrl, token);
+
         String content = String.format(
             "Hola,<br><br>Por favor activa tu cuenta haciendo clic en el siguiente enlace:<br>"
-                    + "<a href=\\\"%s/activate?token=%s\\\">Activar cuenta</a><br><br>Gracias.", 
-            baseUrl, token
+            + "<a href=\"%s\">Activar cuenta</a><br><br>Gracias.", 
+            activationLink
         );
         sendEmail(recipientEmail, subject, content);
     }

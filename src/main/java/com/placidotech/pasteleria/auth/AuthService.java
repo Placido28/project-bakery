@@ -44,24 +44,24 @@ public class AuthService {
 
     // Autenticación con email y contraseña
     public ResponseEntity<ApiResponse> authenticate(AuthRequest request) {
-    User user = userRepository.findByEmail(request.getEmail())
-        .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new RuntimeException("User not found"));
 
-    if (!user.isStateUser()) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-            .body(new ApiResponse("The account is not activated", null));
+        if (!user.isStateUser()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiResponse("The account is not activated", null));
+        }
+
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+
+        // Generación de los tokens
+        String accessToken = jwtProvider.generateAccessToken(user);
+        String refreshToken = generateRefreshToken(user);
+
+        return ResponseEntity.ok(new ApiResponse("Login successful", new AuthResponse(accessToken, refreshToken)));
     }
-
-    authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-    );
-
-    // Generación de los tokens
-    String accessToken = jwtProvider.generateAccessToken(user);
-    String refreshToken = generateRefreshToken(user);
-
-    return ResponseEntity.ok(new ApiResponse("Login successful", new AuthResponse(accessToken, refreshToken)));
-}
 
 
     // Registro de usuario con email y contraseña
@@ -94,12 +94,17 @@ public class AuthService {
     }
 
     //Activación de cuenta mediante token enviado por correo.
-    public void activateAccount(String token) {
+    public void activateAccount(String token, String newPassword) {
         User user = userRepository.findByActivationToken(token)
             .orElseThrow(() -> new InvalidTokenException("Invalid activation token."));
 
+        if (user.isStateUser()) {
+                throw new IllegalStateException("La cuenta ya ha sido activada anteriormente.");
+        }
+        
         user.setStateUser(true);
         user.setActivationToken(null);
+        user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
 

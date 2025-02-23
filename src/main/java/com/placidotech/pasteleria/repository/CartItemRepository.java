@@ -5,10 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import com.placidotech.pasteleria.model.CartItem;
 
-/**
- *
- * @author CristopherPlacidoOca
- */
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Long>{
 }

@@ -1,8 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
 package com.placidotech.pasteleria.model;
 
 import java.util.List;
@@ -24,11 +19,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-/**
- *
- * @author PLACIDO
- */
 
 @Entity
 @Table(name = "addresses")
@@ -52,7 +42,8 @@ public class Address {
     private String lot;
     private String block;
     
-    private String references;
+    @Column(name = "reference_details")
+    private String referencesDetails;
 
     @Enumerated(EnumType.STRING)
     private AddressType addressType;

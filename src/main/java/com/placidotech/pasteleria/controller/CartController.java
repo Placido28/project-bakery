@@ -19,38 +19,53 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
-
-/**
- *
- * @author CristopherPlacidoOca
- */
 @RestController
-@RequestMapping("/api/carts")
+@RequestMapping("/api/cart")
 public class CartController {
 
     @Autowired
     private  ICartService cartService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CartDTO> getCartById(@PathVariable Long id) {
-        return ResponseEntity.ok(cartService.getCartById(id));
+    @GetMapping("/{cartId}")
+    public ResponseEntity<CartDTO> getCartById(@PathVariable Long cartId) {
+        return ResponseEntity.ok(cartService.getCartById(cartId));
     }
     
-    @PostMapping("/{cartId}/items")
-    public ResponseEntity<CartDTO> addItemToCart(@PathVariable Long cartId, @RequestBody CartItemRequest request, @RequestParam(required = false) Long userId) {
+    @PostMapping("/{cartId}/add")
+    public ResponseEntity<CartDTO> addItemToCart(
+        @PathVariable Long cartId, 
+        @RequestBody CartItemRequest request, 
+        @RequestParam(required = false) Long userId) {
         return ResponseEntity.ok(cartService.addItemToCart(cartId, request, userId));
     }
     
-    @DeleteMapping("/{cartId}/items/{itemId}")
-    public ResponseEntity<Void> removeItemFromCart(@PathVariable Long cartId, @PathVariable Long itemId){
+    @DeleteMapping("/{cartId}/remove/{itemId}")
+    public ResponseEntity<Void> removeItemFromCart(
+        @PathVariable Long cartId, 
+        @PathVariable Long itemId){
         cartService.removeItemFromCart(cartId, itemId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{cartId}/clear")
+    public ResponseEntity<Void> clearCart(@PathVariable Long cartId) {
+        cartService.clearCart(cartId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{cartId}/total")
     public ResponseEntity<BigDecimal> getTotalAmount(@PathVariable Long cartId) {
         return ResponseEntity.ok(cartService.getTotalAmount(cartId));
+    }
+
+    // Fusionar carrito de invitado con el del usuario autenticado
+    @PostMapping("/merge")
+    public ResponseEntity<Void> mergeCartWithUser(
+            @RequestParam Long guestCartId,
+            @RequestParam Long userId) {
+
+        cartService.mergeCartWithUser(guestCartId, userId);
+        return ResponseEntity.ok().build();
     }
     
 }

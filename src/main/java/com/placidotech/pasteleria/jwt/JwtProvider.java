@@ -2,6 +2,7 @@ package com.placidotech.pasteleria.jwt;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -32,7 +33,7 @@ public class JwtProvider {
     public String generateAccessToken(User user){
         return Jwts.builder()
                 .setSubject(user.getEmail())
-                .claim("role", user.getRole())
+                .claim("authorities", List.of(user.getRole()))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)

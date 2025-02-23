@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.placidotech.pasteleria.dto.ProductDTO;
 import com.placidotech.pasteleria.exception.ResourceNotFoundException;
@@ -16,10 +17,6 @@ import com.placidotech.pasteleria.service.category.ICategoryService;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- *
- * @author CristopherPlacidoOca
- */
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements IProductService{
@@ -28,6 +25,7 @@ public class ProductServiceImpl implements IProductService{
     private final ICategoryService categoryService;
 
     @Override
+    @Transactional
     public Product addProduct(AddProductRequest product) {
         Product newProduct = new Product();
         newProduct.setName(product.getName());
@@ -46,6 +44,7 @@ public class ProductServiceImpl implements IProductService{
     }
 
     @Override
+    @Transactional
     public void deleteProductById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
@@ -54,6 +53,7 @@ public class ProductServiceImpl implements IProductService{
     }
 
     @Override
+    @Transactional
     public Product updateProduct(ProductUpdateRequest product, Long productId) {
         Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));

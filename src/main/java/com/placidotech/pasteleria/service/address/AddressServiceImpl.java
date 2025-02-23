@@ -97,7 +97,7 @@ public class AddressServiceImpl implements IAddressService{
         existingAddress.setNumbers(addressDTO.getNumbers());
         existingAddress.setLot(addressDTO.getLot());
         existingAddress.setBlock(addressDTO.getBlock());
-        existingAddress.setReferences(addressDTO.getReferences());
+        existingAddress.setReferencesDetails(addressDTO.getReferences());
         existingAddress.setAddressType(AddressType.valueOf(addressDTO.getAddressType()));
 
         //Restaurar el estado original de 'defaultAddress'
@@ -162,7 +162,7 @@ public class AddressServiceImpl implements IAddressService{
         }
 
         // Buscar la dirección predeterminada actual y desmarcarla
-        addressRepository.findByUserIdAndIsDefaultTrue(userId)
+        addressRepository.findByUserIdAndDefaultAddressTrue(userId)
                 .ifPresent(currentDefault -> {
                     currentDefault.setDefaultAddress(false);
                     addressRepository.save(currentDefault);
