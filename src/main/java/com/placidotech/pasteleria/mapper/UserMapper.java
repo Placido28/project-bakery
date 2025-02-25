@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.placidotech.pasteleria.dto.UserDTO;
+import com.placidotech.pasteleria.enums.UserRole;
 import com.placidotech.pasteleria.model.Address;
 import com.placidotech.pasteleria.model.User;
 
@@ -28,7 +29,7 @@ public class UserMapper {
             user.getLastName(),
             user.getEmail(),
             user.getPhoneNumber(),
-            user.getRole(),
+            String.valueOf(user.getRole()),
             user.getProvider(),
             user.isStateUser(),
             user.isRemoved(),
@@ -52,7 +53,7 @@ public class UserMapper {
         user.setLastName(userDTO.getLastName());
         user.setEmail(userDTO.getEmail());
         user.setPhoneNumber(userDTO.getPhoneNumber()); // Corregido el nombre del getter
-        user.setRole(userDTO.getRole());
+        user.setRole(UserRole.valueOf(userDTO.getRole()));
         user.setProvider(userDTO.getProvider());
         user.setStateUser(userDTO.isStateUser()); // stateUser -> isActive en entidad
         user.setRemoved(userDTO.isRemoved());

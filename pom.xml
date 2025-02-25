@@ -107,6 +107,13 @@
             <version>1.12.362</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>9.2.0</version>
+        </dependency>
+
+
         <!-- 🛠️ UTILIDADES Y OTRAS HERRAMIENTAS -->
         <dependency>
             <groupId>org.projectlombok</groupId>

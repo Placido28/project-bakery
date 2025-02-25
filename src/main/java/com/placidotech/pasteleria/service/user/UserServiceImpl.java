@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.placidotech.pasteleria.dto.UserDTO;
+import com.placidotech.pasteleria.enums.UserRole;
 import com.placidotech.pasteleria.exception.ResourceNotFoundException;
 import com.placidotech.pasteleria.mapper.UserMapper;
 import com.placidotech.pasteleria.model.Address;
@@ -83,7 +84,7 @@ public class UserServiceImpl implements IUserService{
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
-        user.setRole(request.getRole() != null ? request.getRole() : "ROLE_USER");
+        user.setRole(UserRole.valueOf(request.getRole() != null ? request.getRole() : "ROLE_USER"));
         user.setProvider("LOCAL");
         user.setRemoved(false);
         user.setStateUser(false); // No puede iniciar sesión hasta establecer su contraseña
@@ -136,7 +137,7 @@ public class UserServiceImpl implements IUserService{
             user.setEmail(request.getEmail());
         }
 
-        user.setRole(request.getRole());
+        user.setRole(UserRole.valueOf(request.getRole()));
 
         userRepository.save(user);
 

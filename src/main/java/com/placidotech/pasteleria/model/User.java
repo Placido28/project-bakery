@@ -4,9 +4,13 @@ import java.util.List;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.placidotech.pasteleria.enums.UserRole;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -55,8 +59,9 @@ public class User {
 
     private String emailVerificationCode; // Código de verificación
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role; // "ROLE_USER" o "ROLE_ADMIN"
+    private UserRole role; // "ROLE_USER" o "ROLE_ADMIN"
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Cart cart;

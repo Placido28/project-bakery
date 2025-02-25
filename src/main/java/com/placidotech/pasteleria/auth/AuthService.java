@@ -8,14 +8,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.placidotech.pasteleria.dto.GoogleUser;
 import com.placidotech.pasteleria.dto.UserDTO;
+import com.placidotech.pasteleria.enums.UserRole;
 import com.placidotech.pasteleria.exception.EmailAlreadyInUseException;
 import com.placidotech.pasteleria.exception.EmailNotFoundException;
 import com.placidotech.pasteleria.exception.InvalidTokenException;
+import com.placidotech.pasteleria.firebase.FirebaseAuthService;
+import com.placidotech.pasteleria.firebase.FirebaseUser;
 import com.placidotech.pasteleria.jwt.JwtProvider;
 import com.placidotech.pasteleria.mapper.UserMapper;
 import com.placidotech.pasteleria.model.RefreshToken;
@@ -26,7 +29,7 @@ import com.placidotech.pasteleria.request.user.GoogleLoginRequest;
 import com.placidotech.pasteleria.request.user.RegisterUserRequest;
 import com.placidotech.pasteleria.response.ApiResponse;
 import com.placidotech.pasteleria.service.EmailService;
-import com.placidotech.pasteleria.service.GoogleAuthService;
+import com.placidotech.pasteleria.service.details.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,7 +40,7 @@ public class AuthService {
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final GoogleAuthService googleAuthService;
+    private final FirebaseAuthService firebaseAuthService;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final EmailService emailService;
@@ -45,7 +48,7 @@ public class AuthService {
     // Autenticación con email y contraseña
     public ResponseEntity<ApiResponse> authenticate(AuthRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         if (!user.isStateUser()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -56,8 +59,10 @@ public class AuthService {
             new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+
         // Generación de los tokens
-        String accessToken = jwtProvider.generateAccessToken(user);
+        String accessToken = jwtProvider.generateAccessToken(userDetails);
         String refreshToken = generateRefreshToken(user);
 
         return ResponseEntity.ok(new ApiResponse("Login successful", new AuthResponse(accessToken, refreshToken)));
@@ -74,7 +79,7 @@ public class AuthService {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
-        user.setRole("ROLE_USER");
+        user.setRole(UserRole.ROLE_USER);
         user.setProvider("LOCAL");
         user.setStateUser(false); // Requiere activación
         user.setRemoved(false);
@@ -150,7 +155,8 @@ public class AuthService {
 
         if (refreshTokenOpt.isPresent() && refreshTokenOpt.get().getExpiryDate().isAfter(Instant.now())) {
             User user = refreshTokenOpt.get().getUser();
-            String newAccessToken = jwtProvider.generateAccessToken(user);
+            CustomUserDetails userDetails = new CustomUserDetails(user);
+            String newAccessToken = jwtProvider.generateAccessToken(userDetails);
             return new AuthResponse(newAccessToken, request.getRefreshToken());
         }
 
@@ -164,43 +170,51 @@ public class AuthService {
 
     public AuthResponse loginWithGoogle(GoogleLoginRequest request) {
         // Obtener datos reales desde el idToken
-        GoogleUser googleUser = googleAuthService.getUserInfo(request.getIdToken());
+        FirebaseUser firebaseUser = firebaseAuthService.getUserInfo(request.getIdToken());
 
         // Buscar al usuario en la base de datos
-        Optional<User> existingUser = userRepository.findByEmail(googleUser.getEmail());
+        Optional<User> existingUser = userRepository.findByEmail(firebaseUser.getEmail());
 
         if (!existingUser.isPresent()) {
             throw new RuntimeException("User not registered. Sign up with Google first.");
         }
 
         // Generar tokens de acceso y retorno
-        String accessToken = jwtProvider.generateAccessToken(existingUser.get());
-        String refreshToken = jwtProvider.generateRefreshToken(existingUser.get());
+        CustomUserDetails userDetails = new CustomUserDetails(existingUser.get());
+        String accessToken = jwtProvider.generateAccessToken(userDetails);
+        String refreshToken = jwtProvider.generateRefreshToken(userDetails);
 
         return new AuthResponse(accessToken, refreshToken);
     }
 
     public AuthResponse registerWithGoogle(GoogleLoginRequest request) {
         // Obtener datos reales desde el idToken
-        GoogleUser googleUser = googleAuthService.getUserInfo(request.getIdToken());
+        FirebaseUser firebaseUser = firebaseAuthService.getUserInfo(request.getIdToken());
 
-        User user = userRepository.findByEmail(googleUser.getEmail())
-                .orElseGet(() -> {
-                    User newUser = new User();
-                    newUser.setFirstName(googleUser.getFirstName());
-                    newUser.setLastName(googleUser.getLastName());
-                    newUser.setEmail(googleUser.getEmail());
-                    newUser.setProvider("GOOGLE");
-                    newUser.setGoogleId(googleUser.getGoogleId());
-                    newUser.setRole("ROLE_USER");
-                    newUser.setStateUser(true); // Google users are automatically activated
-                    newUser.setRemoved(false);
-                    return userRepository.save(newUser);
-                });
+        // Verificar si el usuario ya existe
+        Optional<User> existingUser = userRepository.findByEmail(firebaseUser.getEmail());
+
+        if (existingUser.isPresent()) {
+            throw new EmailAlreadyInUseException("El usuario con correo " + firebaseUser.getEmail() + " ya está registrado.");
+        }
+
+        // Crear nuevo usuario si no existe
+        User newUser = new User();
+        newUser.setFirstName(firebaseUser.getFirstName());
+        newUser.setLastName(firebaseUser.getLastName());
+        newUser.setEmail(firebaseUser.getEmail());
+        newUser.setProvider("GOOGLE");
+        newUser.setGoogleId(firebaseUser.getUid());
+        newUser.setRole(UserRole.ROLE_USER);
+        newUser.setStateUser(true); // Google users are automatically activated
+        newUser.setRemoved(false);
+
+        userRepository.save(newUser);
 
         // Generar tokens para el usuario autenticado
-        String accessToken = jwtProvider.generateAccessToken(user);
-        String refreshToken = jwtProvider.generateRefreshToken(user);
+        CustomUserDetails userDetails = new CustomUserDetails(newUser);
+        String accessToken = jwtProvider.generateAccessToken(userDetails);
+        String refreshToken = jwtProvider.generateRefreshToken(userDetails);
 
         return new AuthResponse(accessToken, refreshToken);
     }

@@ -13,10 +13,6 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 
-/**
- *
- * @author CristopherPlacidoOca
- */
 @Service
 public class FirebaseStorageService {
 

@@ -6,8 +6,5 @@ import lombok.Data;
 @Data
 public class GoogleLoginRequest {
     @NotBlank
-    private String googleId;
-    
-    @NotBlank
     private String idToken;
 }

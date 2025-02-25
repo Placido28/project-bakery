@@ -1,0 +1,5 @@
+package com.placidotech.pasteleria.enums;
+
+public enum UserRole {
+    ROLE_USER, ROLE_ADMIN
+}
