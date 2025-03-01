@@ -1,0 +1,10 @@
+@import "variables";
+@import "mixins";
+
+.btn-primary {
+    @include button($primary-color, white);
+}
+
+.btn-secondary {
+    @include button($secondary-color, black);
+}

@@ -1,0 +1,30 @@
+// Botón reutilizable
+@mixin button($bg-color, $text-color) {
+    background: $bg-color;
+    color: $text-color;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+
+    &:hover {
+        background: darken($bg-color, 10%);
+    }
+}
+
+// Responsive
+@mixin responsive($size) {
+    @if $size ==tablet {
+        @media (max-width: 768px) {
+            @content;
+        }
+    }
+
+    @else if $size ==mobile {
+        @media (max-width: 480px) {
+            @content;
+        }
+    }
+}
