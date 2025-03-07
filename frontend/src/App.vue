@@ -1,10 +1,34 @@
+<script setup lang="ts">
+import MainNavbar from './components/MainNavbar.vue';
+
+</script>
+
 <template>
-  <NavigationBar/>
+  <div id="nav">
+    <MainNavbar/>
+  </div>
   <router-view/>
-  <PageFooter/>>
 </template>
 
-<script setup lang="ts">
-import NavigationBar from './components/NavigationBar.vue';
-import PageFooter from './components/PageFooter.vue';
-</script>
+<style>
+#app {
+  font-family: Avenir, Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+
+#nav {
+  padding: 30px;
+}
+
+#nav a {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+#nav a.router-link-exact-active {
+  color: #42b983;
+}
+</style>
