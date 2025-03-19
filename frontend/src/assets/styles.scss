@@ -1,0 +1,30 @@
+.app-background {
+    background-color: #ffffff; // Color rosa pastel
+    color: #333; // Color de texto para buen contraste
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section,
+summary {
+    display: block;
+}
+
+.fondo-login {
+    height: 100vh !important;
+    background: url('~@/assets/img/fondo-login.jpg') no-repeat;
+    background-position: center;
+    background-size: cover;
+}

@@ -1,22 +1,25 @@
 <script setup lang="ts">
-import MainNavbar from './components/MainNavbar.vue';
 
 </script>
 
 <template>
-  <div id="nav">
-    <MainNavbar/>
-  </div>
   <router-view/>
 </template>
 
 <style>
+#body {
+  background-color: #ffe6e6; /*Fondo rosa pastel*/
+  color: #333; /*Color de texto oscuro para contraste*/
+  font-family: 'Poppins', sans-serif; /*Fuente moderna y limpia*/
+}
 #app {
   font-family: Avenir, Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  position: relative;
+  overflow: hidden;
 }
 
 #nav {
