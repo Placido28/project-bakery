@@ -91,7 +91,7 @@
                                 </form>
                                 <div class="ho ayb aze bas">
                                     Don’t have an account?
-                                    <a href="./signup.html" class="text-link">Sign Up</a>
+                                    <a href="./signup" class="text-link">Sign Up</a>
                                 </div>
                             </div>
                         </div>
