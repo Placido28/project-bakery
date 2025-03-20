@@ -11,9 +11,9 @@
                                         <img src="../assets/img/logo.png" class="imagen-reducida" alt="logo">
                                     </a>
                                 </div>
-                                <!-- <div class="mb-3">
-                                    <h2 class="fs-4 mb-0">Sign in to your account</h2>
-                                </div> -->
+                                <div class="mb-3">
+                                    <p v-if="errorMessage">{{ errorMessage }}</p>
+                                </div>
                                 <form class="needs-validation">
                                     <div class="row g-3">
                                         <!-- row -->
@@ -21,8 +21,8 @@
                                             <!-- input -->
                                             <label for="formSigninEmail" class="form-label visually-hidden">Email
                                                 address</label>
-                                            <input type="email" class="form-control" id="formSigninEmail"
-                                                placeholder="Email">
+                                            <input v-model="email" type="email" class="form-control" id="formSigninEmail"
+                                                placeholder="Email" required>
                                             <div class="invalid-feedback">Please enter name.</div>
                                         </div>
                                         <div class="col-12">
@@ -31,8 +31,8 @@
                                                 <label for="formSigninPassword"
                                                     class="form-label visually-hidden">Password</label>
                                                 <div class="password-field position-relative">
-                                                    <input type="password" class="form-control fakePassword"
-                                                        id="formSigninPassword" placeholder="*****">
+                                                    <input v-model="password" type="password" class="form-control fakePassword"
+                                                        id="formSigninPassword" placeholder="*****" required>
                                                     <span><i class="bi bi-eye-slash passwordToggler"></i></span>
                                                     <div class="invalid-feedback">Please enter password.</div>
                                                 </div>
@@ -102,8 +102,34 @@
     </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts">
+import { ref } from 'vue';
+import { login, saveToken } from '@/service/authService';
 
+export default {
+  setup() {
+    const email = ref('');
+    const password = ref('');
+    const errorMessage = ref('');
+
+    const handleLogin = async () => {
+      try {
+        const response = await login({ email: email.value, password: password.value });
+
+        if (response.accessToken) {
+          saveToken(response.accessToken, response.refreshToken);
+          window.location.href = '/dashboard'; // Redirige tras el login exitoso
+        } else {
+          errorMessage.value = 'Error en la autenticación';
+        }
+      } catch (error) {
+        errorMessage.value = 'Credenciales incorrectas';
+      }
+    };
+
+    return { email, password, errorMessage, handleLogin };
+  }
+};
 </script>
 
 <style scoped>
@@ -154,13 +180,5 @@ a:hover {
 h2 {
     margin-top: 10px;
     /* Ajusta según lo necesario */
-}
-
-.ho {
-    margin-top: calc(var(--spacing)* 10);
-}
-
-.l {
-    position: relative;
 }
 </style>

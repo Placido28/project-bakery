@@ -55,7 +55,7 @@
 											<!-- text -->
 											<p class="mb-2">
 												I already have an account
-												<a href="./signin.html" class="text-link">Sign In</a>
+												<a href="./signin" class="text-link">Sign In</a>
 											</p>
 											<p class="mb-0">
 												<small>

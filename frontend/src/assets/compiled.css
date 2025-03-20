@@ -1199,7 +1199,7 @@
     margin-top: calc(var(--spacing) * 5);
   }
   .hk {
-    margin-top: calc(var(--spacing) * 6);
+    margin-top: calc(var(--spacing) * 2);
   }
   .hl {
     margin-top: calc(var(--spacing) * 7);
@@ -1211,7 +1211,7 @@
     margin-top: calc(var(--spacing) * 9);
   }
   .ho {
-    margin-top: calc(var(--spacing) * 10);
+    margin-top: calc(var(--spacing) * 6);
   }
   .hp {
     margin-top: calc(var(--spacing) * 11);
