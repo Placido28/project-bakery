@@ -21,28 +21,28 @@
 											<!-- input -->
 											<label for="formSignupfname" class="form-label visually-hidden">First
 												Name</label>
-											<input type="text" class="form-control" id="formSignupfname" placeholder="First Name" required="">
+											<input type="text" class="form-control" id="formSignupfname" placeholder="First Name" required>
 											<div class="invalid-feedback">Please enter first name.</div>
 										</div>
 										<div class="col-md-6 col-12">
 											<!-- input -->
 											<label for="formSignuplname" class="form-label visually-hidden">Last
 												Name</label>
-											<input type="text" class="form-control" id="formSignuplname" placeholder="Last Name" required="">
+											<input type="text" class="form-control" id="formSignuplname" placeholder="Last Name" required>
 											<div class="invalid-feedback">Please enter last name.</div>
 										</div>
 										<div class="col-12">
 											<!-- input -->
 											<label for="formSignupEmail" class="form-label visually-hidden">Email
 												address</label>
-											<input type="email" class="form-control" id="formSignupEmail" placeholder="Email" required="">
+											<input type="email" class="form-control" id="formSignupEmail" placeholder="Email" required>
 											<div class="invalid-feedback">Please enter email.</div>
 										</div>
 										<div class="col-12">
 											<div class="password-field position-relative">
 												<label for="formSignupPassword" class="form-label visually-hidden">Password</label>
 												<div class="password-field position-relative">
-													<input type="password" class="form-control fakePassword" id="formSignupPassword" placeholder="*****" required="">
+													<input type="password" class="form-control fakePassword" id="formSignupPassword" placeholder="*****" required>
 													<span><i class="bi bi-eye-slash passwordToggler"></i></span>
 													<div class="invalid-feedback">Please enter password.</div>
 												</div>
@@ -55,7 +55,7 @@
 											<!-- text -->
 											<p class="mb-2">
 												I already have an account
-												<a href="./signin.html" class="text-link">Sign In</a>
+												<a href="./signin" class="text-link">Sign In</a>
 											</p>
 											<p class="mb-0">
 												<small>
