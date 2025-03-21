@@ -1,3 +1,6 @@
+const webpack = require('webpack');
+const path = require('path');
+
 module.exports = {
   devServer: {
     proxy: process.env.VUE_APP_API_URL, // Proxy para evitar problemas de CORS
@@ -5,8 +8,13 @@ module.exports = {
   configureWebpack: {
     resolve: {
       alias: {
-        '@': require('path').resolve(__dirname, 'src'),
+        '@': path.resolve(__dirname, 'src'),
       },
     },
-  },
+    plugins: [
+      new webpack.DefinePlugin({
+        '__VUE_PROD_HYDRATION_MISMATCH_DETAILS__': JSON.stringify(false)
+      })
+    ]
+  }
 };

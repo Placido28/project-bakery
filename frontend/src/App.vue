@@ -1,5 +1,19 @@
-<script setup lang="ts">
+<script lang="ts">
+  import { getAccessToken } from './service/authService';
+  import { useRouter } from 'vue-router';
+  import { onMounted } from 'vue';
 
+  export default {
+    setup(){
+      const router = useRouter();
+      
+      onMounted(() => {
+        if (!getAccessToken()) {
+          router.push('/login');
+        }
+      });
+    }
+  }
 </script>
 
 <template>

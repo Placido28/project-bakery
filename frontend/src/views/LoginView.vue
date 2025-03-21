@@ -14,15 +14,15 @@
                                 <div class="mb-3">
                                     <p v-if="errorMessage">{{ errorMessage }}</p>
                                 </div>
-                                <form class="needs-validation">
+                                <form class="needs-validation" @submit.prevent="handleLogin">
                                     <div class="row g-3">
                                         <!-- row -->
                                         <div class="col-12">
                                             <!-- input -->
                                             <label for="formSigninEmail" class="form-label visually-hidden">Email
                                                 address</label>
-                                            <input v-model="email" type="email" class="form-control" id="formSigninEmail"
-                                                placeholder="Email" required>
+                                            <input v-model="email" type="email" class="form-control"
+                                                id="formSigninEmail" placeholder="Email" required>
                                             <div class="invalid-feedback">Please enter name.</div>
                                         </div>
                                         <div class="col-12">
@@ -31,8 +31,9 @@
                                                 <label for="formSigninPassword"
                                                     class="form-label visually-hidden">Password</label>
                                                 <div class="password-field position-relative">
-                                                    <input v-model="password" type="password" class="form-control fakePassword"
-                                                        id="formSigninPassword" placeholder="*****" required>
+                                                    <input v-model="password" type="password"
+                                                        class="form-control fakePassword" id="formSigninPassword"
+                                                        placeholder="*****" required>
                                                     <span><i class="bi bi-eye-slash passwordToggler"></i></span>
                                                     <div class="invalid-feedback">Please enter password.</div>
                                                 </div>
@@ -103,33 +104,38 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue';
+import { ref, defineComponent } from 'vue';
 import { login, saveToken } from '@/service/authService';
+import { useRouter } from 'vue-router';
 
-export default {
-  setup() {
-    const email = ref('');
-    const password = ref('');
-    const errorMessage = ref('');
+export default defineComponent({
+    setup() {
+        const email = ref('');
+        const password = ref('');
+        const errorMessage = ref('');
+        const router = useRouter();
 
-    const handleLogin = async () => {
-      try {
-        const response = await login({ email: email.value, password: password.value });
+        const handleLogin = async () => {
+            try {
+                const response = await login({ email: email.value, password: password.value });
 
-        if (response.accessToken) {
-          saveToken(response.accessToken, response.refreshToken);
-          window.location.href = '/dashboard'; // Redirige tras el login exitoso
-        } else {
-          errorMessage.value = 'Error en la autenticación';
-        }
-      } catch (error) {
-        errorMessage.value = 'Credenciales incorrectas';
-      }
-    };
+                console.log("Respuesta del backend:", response); // 📌 Verifica qué datos llegan
 
-    return { email, password, errorMessage, handleLogin };
-  }
-};
+                if (response.accessToken) {
+                    saveToken(response.accessToken, response.refreshToken);
+                    router.push('/about'); // 📌 Redirección correcta
+                } else {
+                    errorMessage.value = 'Error en la autenticación: No se recibió un token';
+                }
+            } catch (error) {
+                console.error("Error en login:", error);
+                errorMessage.value = 'Credenciales incorrectas o error en el servidor';
+            }
+        };
+
+        return { email, password, errorMessage, handleLogin };
+    }
+});
 </script>
 
 <style scoped>

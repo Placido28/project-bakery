@@ -3,7 +3,7 @@ import HomeView from '../views/HomeView.vue';
 import AboutView from '@/views/AboutView.vue';
 import LoginView  from '@/views/LoginView.vue';
 import SignupView from '@/views/SignupView.vue';
-import { getToken } from '@/service/authService';
+import { getAccessToken } from '@/service/authService';
 
 const routes = [
   { path: '/', name: 'Home', component: HomeView },
@@ -18,14 +18,12 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const token = getToken();
+  const isAuthenticated = !!getAccessToken(); // Verifica si hay un token
 
-  if ((to.path === '/signin' || to.path === '/signup') && token) {
-    next('/dashboard'); // Redirige al dashboard si ya está autenticado
-  } else if (to.meta.requiresAuth && !token) {
-    next('/signin'); // Redirige al login si no está autenticado
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    next("/signin"); // Redirige al login si no está autenticado
   } else {
-    next();
+    next(); // Permite el acceso
   }
 });
 

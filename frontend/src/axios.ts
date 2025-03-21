@@ -2,7 +2,7 @@ import axios from "axios";
 import { getAccessToken, getRefreshToken, saveToken, logout } from "@/service/authService";
 
 const api = axios.create({
-    baseURL: "http://localhost:8081/api",
+    baseURL: process.env.VUE_APP_API_URL || "http://localhost:8081/api",
     headers: {
         "Content-Type": "application/json",
     },
@@ -29,22 +29,32 @@ api.interceptors.response.use(
                         refreshToken,
                     });
 
+                    if (!response.data.accessToken) {
+                        throw new Error("No se recibió un nuevo token");
+                    }
+
                     const { accessToken, refreshToken: newRefreshToken } = response.data;
                     saveToken(accessToken, newRefreshToken);
                     
                     error.config.headers.Authorization = `Bearer ${accessToken}`;
                     return api(error.config); // Reintentar la petición original
                 } catch (refreshError) {
-                    logout();
-                    window.location.href = "/login"; // Redirigir a login si falla
+                    console.error("Refresh token inválido. Cerrando sesión...");
+                    logoutAndRedirect();
                 }
             } else {
-                logout();
-                window.location.href = "/login";
+                console.warn("No hay refresh token. Cerrando sesión...");
+                logoutAndRedirect();
             }
         }
         return Promise.reject(error);
     }
 );
+
+// Función para cerrar sesión y redirigir correctamente
+function logoutAndRedirect() {
+    logout(); // Elimina tokens del localStorage
+    window.location.href = "/signin"; // Redirige al login
+}
 
 export default api;
