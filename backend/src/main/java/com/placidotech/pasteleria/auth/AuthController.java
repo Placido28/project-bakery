@@ -1,5 +1,6 @@
 package com.placidotech.pasteleria.auth;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,6 +31,7 @@ import org.springframework.security.core.Authentication;
 public class AuthController {
 
     private final AuthService authService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> authenticate(@RequestBody AuthRequest request) {
@@ -74,6 +76,8 @@ public class AuthController {
     @PostMapping("/google/login")
     public ResponseEntity<AuthResponse> loginWithGoogle(@RequestBody GoogleLoginRequest request) {
         AuthResponse response = authService.loginWithGoogle(request);
+
+        messagingTemplate.convertAndSend("/topic/logout", "LOGOUT");
         return ResponseEntity.ok(response);
     }
 
